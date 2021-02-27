@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class ListModel extends AbstractTableModel {
 
     /**
@@ -72,6 +71,13 @@ public class ListModel extends AbstractTableModel {
 
                 break;
 
+            case EveryThing:
+
+            filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+            .collect(Collectors.toList());
+
+                break;
+
             case DueWithInWeek:
                 //  Your code goes here
                 break;
@@ -125,6 +131,8 @@ public class ListModel extends AbstractTableModel {
                 return columnNamesCurrentRentals[col];
             case DueWithinWeekGamesFirst:
                 return columnNamesCurrentRentals[col];
+            case EveryThing:
+                return columnNamesCurrentRentals[col];
 
         }
         throw new RuntimeException("Undefined state for Col Names: " + display);
@@ -142,6 +150,8 @@ public class ListModel extends AbstractTableModel {
             case Cap14DaysOverdue:
                 return columnNamesCurrentRentals.length;
             case DueWithinWeekGamesFirst:
+                return columnNamesCurrentRentals.length;
+            case EveryThing:
                 return columnNamesCurrentRentals.length;
 
 
@@ -167,6 +177,8 @@ public class ListModel extends AbstractTableModel {
             case Cap14DaysOverdue:
                 return currentRentScreen(row, col);
             case DueWithinWeekGamesFirst:
+                return currentRentScreen(row, col);
+            case EveryThing:
                 return currentRentScreen(row, col);
 
 
@@ -327,6 +339,62 @@ public class ListModel extends AbstractTableModel {
     public void loadFromText(String filename) {
         listOfRentals.clear();
 
+        if (filename == null)
+			throw new IllegalArgumentException();
+
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(new File(filename)).useDelimiter("\n");
+            
+            int i = 0;
+            Game rent = new Game();
+            Console rent2 = new Console();
+            DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            GregorianCalendar date = new GregorianCalendar();
+
+            scanner.next();
+
+            while(scanner.hasNext()){
+            if(scanner.next().equals("project2GIVE_TO_STUDENTS.Game")){
+                rent.nameOfRenter = scanner.next();
+                try{
+                 
+                rent.rentedOn.setGregorianChange(df.parse(scanner.nextLine())); 
+                rent.dueBack.setTime(df.parse(scanner.nextLine())); 
+                rent.actualDateReturned.setTime(df.parse(scanner.nextLine())); 
+                }catch(java.text.ParseException e){
+                }
+                rent.setNameGame(scanner.next());
+                rent.setConsole(ConsoleTypes.valueOf(scanner.next()));
+            
+                listOfRentals.add(i,rent);
+            }else{
+
+                rent2.nameOfRenter = scanner.next();
+                String debug = scanner.next();
+                try{
+                    Date d1 = df.parse(debug);
+                    date.setTime(d1);
+                    rent.setRentedOn(date); 
+
+                    rent.dueBack.setTime(df.parse(scanner.next())); 
+                    rent.actualDateReturned.setTime(df.parse(scanner.next())); 
+                    }catch(ParseException e){
+                        throw new IllegalArgumentException();
+                    }
+                rent2.setConsoleType(ConsoleTypes.valueOf(scanner.next()));
+
+                listOfRentals.add(i,rent2);
+                
+            }
+            i++;
+        }
+			
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException();
+		}
+
+        scanner.close();
         updateScreen();
     }
 

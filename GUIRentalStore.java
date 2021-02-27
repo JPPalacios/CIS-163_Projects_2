@@ -26,6 +26,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
     private JMenuItem withIn7ItemScn;
     private JMenuItem sort30DaysItemScn;
     private JMenuItem sortGameItemScn;
+    private JMenuItem everything;
 
     private JPanel panel;
 
@@ -53,6 +54,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         withIn7ItemScn = new JMenuItem("Within 7 Days Screen");
         sortGameItemScn = new JMenuItem("Within 7 Days Games First Screen");
         sort30DaysItemScn = new JMenuItem("Cap all Rentals 14 days late Screen");
+        everything = new JMenuItem("EveryThing Screen");
 
         fileMenu.add(openSerItem);
         fileMenu.add(saveSerItem);
@@ -68,6 +70,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         fileMenu.add (sortGameItemScn);
         fileMenu.add(sort30DaysItemScn);
         fileMenu.addSeparator();
+        fileMenu.add(everything);
 
         actionMenu.add(rentConsoleItem);
         actionMenu.add(rentGameItem);
@@ -91,6 +94,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         withIn7ItemScn.addActionListener(this);
         sortGameItemScn.addActionListener(this);
         sort30DaysItemScn.addActionListener(this);
+        everything.addActionListener(this);
 
         setJMenuBar(menus);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -120,6 +124,10 @@ public class GUIRentalStore extends JFrame implements ActionListener {
             GregorianCalendar dat = new GregorianCalendar();
             dList.setDisplay(ScreenDisplay.DueWithInWeek);
         }
+
+        if (everything == comp)
+            dList.setDisplay(ScreenDisplay.EveryThing);
+
 
         if (sortGameItemScn == comp)
             dList.setDisplay(ScreenDisplay.DueWithinWeekGamesFirst);
@@ -185,6 +193,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
                 dList.update(index, unit);
             }
         }
+
     }
 
     public static void main(String[] args) {

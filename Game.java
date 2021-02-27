@@ -10,7 +10,7 @@ public class Game extends Rental {
     /** represents the name of the game */
     private String nameGame;
 
-    /**
+    /******
      * Represents the console the person rented to play the game,
      * null if no console was rented.
      */
