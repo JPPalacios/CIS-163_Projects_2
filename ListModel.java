@@ -21,6 +21,11 @@ public class ListModel extends AbstractTableModel {
     private ArrayList<Rental> filteredListRentals;
 
     /**
+     * holds rentals that are overdue
+     */
+    private ArrayList<Rental> overDue;
+
+    /**
      * current screen being displayed
      */
     private ScreenDisplay display = ScreenDisplay.CurrentRentalStatus;
@@ -29,6 +34,10 @@ public class ListModel extends AbstractTableModel {
             "Rented On", "Due Date ", "Console", "Name of the Game"};
     private String[] columnNamesReturned = {"Renter\'s Name", "Rented On Date",
             "Due Date", "Actual date returned ", "Est. Cost", " Real Cost"};
+            // use in within7daysgamesfirst -> modify not done
+    // private String[] columnWithin7Days = {"Renter\'s Name", "Rented On Date",
+    // "Due Date", "Actual date returned ", "Est. Cost", " Real Cost"};
+
 
     private DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -72,22 +81,41 @@ public class ListModel extends AbstractTableModel {
                 break;
 
             case EveryThing:
-
-            filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
-            .collect(Collectors.toList());
+                filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                    .collect(Collectors.toList());
 
                 break;
 
             case DueWithInWeek:
-                //  Your code goes here
+                filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                    .filter(n -> n.dueBack.compareTo(n.rentedOn)  <= 7)  // not returned rentals,  dueDate - dateRented <= 7
+                    .collect(Collectors.toList()); 
+
                 break;
 
             case DueWithinWeekGamesFirst:
-                // Your code goes here
+                filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                    .filter(n -> n.dueBack.compareTo(n.rentedOn) <=7)
+                    .filter(n -> n.getActualDateReturned() == null )
+                    .collect(Collectors.toList());
+
+                Collections.sort(filteredListRentals, (n1, n2) -> n1.nameOfRenter.compareTo(n2.nameOfRenter));
                 break;
 
             case Cap14DaysOverdue:
                 // Your code goes here AND OTHER PLACES TOO
+                filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                    .filter(n ->  n.dueBack.compareTo(n.rentedOn)< -7)
+                    .filter(n ->  n.dueBack.compareTo(n.rentedOn)  <= -14)                 
+                    // .map(n -> n.getNameOfRenter().toUpperCase())
+                    // .map(n -> n.getRentedOn())
+                    // .map(n -> n.getDueBack()) 
+                    // .map(n -> n.getActualDateReturned())
+                    //.map(n -> n == null ? defaultValue : x ) use for reference
+                    .collect(Collectors.toList()); 
+
+                Collections.sort(filteredListRentals, (n1, n2) -> n1.nameOfRenter.compareTo(n2.nameOfRenter));
+                              
                 break;
 
             default:
@@ -153,8 +181,6 @@ public class ListModel extends AbstractTableModel {
                 return columnNamesCurrentRentals.length;
             case EveryThing:
                 return columnNamesCurrentRentals.length;
-
-
 
         }
         throw new IllegalArgumentException();
@@ -256,6 +282,8 @@ public class ListModel extends AbstractTableModel {
         }
     }
 
+   // public Object 
+
     public void add(Rental a) {
         listOfRentals.add(a);
         updateScreen();
@@ -344,45 +372,88 @@ public class ListModel extends AbstractTableModel {
 
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(new File(filename)).useDelimiter("\n");
+			scanner = new Scanner(new File(filename));
             
             int i = 0;
             Game rent = new Game();
             Console rent2 = new Console();
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
             GregorianCalendar date = new GregorianCalendar();
+            Date d1;
 
-            scanner.next();
+            scanner.nextLine();
 
-            while(scanner.hasNext()){
-            if(scanner.next().equals("project2GIVE_TO_STUDENTS.Game")){
+            while(scanner.hasNextLine()){
+                //checks if game or console
+            if(scanner.nextLine().contains("project2GIVE_TO_STUDENTS.Game")){
+               //gets renters name
+                scanner.next();
+                scanner.next();
                 rent.nameOfRenter = scanner.next();
+                //gets dates for rented on and due date. 
                 try{
-                 
-                rent.rentedOn.setGregorianChange(df.parse(scanner.nextLine())); 
-                rent.dueBack.setTime(df.parse(scanner.nextLine())); 
-                rent.actualDateReturned.setTime(df.parse(scanner.nextLine())); 
+                //rented    
+                scanner.next();
+                scanner.next(); 
+                d1 = df.parse(scanner.next());
+                date.setTime(d1);
+                rent.setRentedOn(date); 
+                //due
+                scanner.next();
+                d1 = df.parse(scanner.next());
+                date.setTime(d1);
+                rent.setDueBack(date); 
+                //acutal date returned 
+                String checkReturn = scanner.nextLine();
+                if(checkReturn.contains("Not returned")){
+
+
+                }
+                else{
+                    d1 = df.parse(checkReturn);
+                    date.setTime(d1);
+                    rent.setActualDateReturned(date);
+                }
+                
                 }catch(java.text.ParseException e){
                 }
-                rent.setNameGame(scanner.next());
-                rent.setConsole(ConsoleTypes.valueOf(scanner.next()));
+                rent.setNameGame(scanner.nextLine());
+                rent.setConsole(ConsoleTypes.valueOf(scanner.nextLine()));
             
                 listOfRentals.add(i,rent);
             }else{
-
-                rent2.nameOfRenter = scanner.next();
-                String debug = scanner.next();
-                try{
-                    Date d1 = df.parse(debug);
-                    date.setTime(d1);
-                    rent.setRentedOn(date); 
-
-                    rent.dueBack.setTime(df.parse(scanner.next())); 
-                    rent.actualDateReturned.setTime(df.parse(scanner.next())); 
-                    }catch(ParseException e){
-                        throw new IllegalArgumentException();
-                    }
-                rent2.setConsoleType(ConsoleTypes.valueOf(scanner.next()));
+                 //gets renters name
+                 scanner.next();
+                 scanner.next();
+                 rent2.nameOfRenter = scanner.next();
+                 //gets dates for rented on and due date. 
+                 try{
+                 //rented    
+                 scanner.next();
+                 scanner.next(); 
+                 d1 = df.parse(scanner.next());
+                 date.setTime(d1);
+                 rent2.setRentedOn(date); 
+                 //due
+                 scanner.next();
+                 d1 = df.parse(scanner.next());
+                 date.setTime(d1);
+                 rent2.setDueBack(date); 
+                 //acutal date returned 
+                 String checkReturn = scanner.nextLine();
+                 if(checkReturn.contains("Not returned")){
+ 
+ 
+                 }
+                 else{
+                     d1 = df.parse(checkReturn);
+                     date.setTime(d1);
+                     rent2.setActualDateReturned(date);
+                 }
+                 
+                 }catch(java.text.ParseException e){
+                 }
+                 rent2.setConsoleType(ConsoleTypes.valueOf(scanner.nextLine()));
 
                 listOfRentals.add(i,rent2);
                 
@@ -445,6 +516,11 @@ public class ListModel extends AbstractTableModel {
             Game game6 = new Game("Person6", g4, g7, null, "title1", ConsoleTypes.NintendoSwich);
             Game game7 = new Game("Person5", g4, g8, null, "title1", ConsoleTypes.NintendoSwich);
 
+            controler controler2 = new controler("Person2", g5, g3, null, ControlerTypes.PlayStation4);
+            controler controler3 = new controler("Person5", g4, g8, null, ControlerTypes.SegaGenesisMini);
+            controler controler4 = new controler("Person6", g4, g7, null, ControlerTypes.SegaGenesisMini);
+            controler controler5 = new controler("Person1", g5, g4, g3, ControlerTypes.XBoxOneS);
+
             add(game1);
             add(game4);
             add(game5);
@@ -459,12 +535,17 @@ public class ListModel extends AbstractTableModel {
             add(console3);
             add(console4);
 
+            add(controler2);
+            add(controler3);
+            add(controler4);
+            add(controler5);
+
             // create a bunch of them.
             int count = 0;
             Random rand = new Random(13);
             String guest = null;
 
-            while (count < 0) {  // change this number to 300 for a complete test of your code
+            while (count < 30) {  // change this number to 300 for a complete test of your code
                 Date date = df.parse("7/" + (rand.nextInt(10) + 2) + "/2020");
                 GregorianCalendar g = new GregorianCalendar();
                 g.setTime(date);
