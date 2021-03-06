@@ -375,15 +375,16 @@ public class ListModel extends AbstractTableModel {
 			scanner = new Scanner(new File(filename));
             
             int i = 0;
-            Game rent = new Game();
-            Console rent2 = new Console();
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            GregorianCalendar date = new GregorianCalendar();
-            Date d1;
-
+           
             scanner.nextLine();
 
             while(scanner.hasNextLine()){
+                
+                Game rent = new Game();
+                Console rent2 = new Console();
+                GregorianCalendar date = new GregorianCalendar();
+                Date d1;
                 //checks if game or console
             if(scanner.nextLine().contains("project2GIVE_TO_STUDENTS.Game")){
                //gets renters name
@@ -404,6 +405,7 @@ public class ListModel extends AbstractTableModel {
                 date.setTime(d1);
                 rent.setDueBack(date); 
                 //acutal date returned 
+                scanner.nextLine();
                 String checkReturn = scanner.nextLine();
                 if(checkReturn.contains("Not returned")){
 
@@ -418,7 +420,14 @@ public class ListModel extends AbstractTableModel {
                 }catch(java.text.ParseException e){
                 }
                 rent.setNameGame(scanner.nextLine());
-                rent.setConsole(ConsoleTypes.valueOf(scanner.nextLine()));
+                String checkConsole = scanner.nextLine();
+
+                if(checkConsole.contains("No")){
+
+                }
+                else{
+                rent.setConsole(ConsoleTypes.valueOf(checkConsole));
+                }
             
                 listOfRentals.add(i,rent);
             }else{
@@ -440,6 +449,7 @@ public class ListModel extends AbstractTableModel {
                  date.setTime(d1);
                  rent2.setDueBack(date); 
                  //acutal date returned 
+                 scanner.nextLine();
                  String checkReturn = scanner.nextLine();
                  if(checkReturn.contains("Not returned")){
  
@@ -466,6 +476,7 @@ public class ListModel extends AbstractTableModel {
 		}
 
         scanner.close();
+        display = ScreenDisplay.EveryThing;
         updateScreen();
     }
 
