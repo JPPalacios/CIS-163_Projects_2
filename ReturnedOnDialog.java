@@ -109,4 +109,3 @@ public class ReturnedOnDialog extends JDialog implements ActionListener {
 	}
 
 }
-

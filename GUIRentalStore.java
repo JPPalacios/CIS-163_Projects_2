@@ -19,6 +19,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
     private JMenuItem saveTextItem;
     private JMenuItem rentConsoleItem;
     private JMenuItem rentGameItem;
+    private JMenuItem rentControllerItem;
     private JMenuItem returnItem;
 
     private JMenuItem currentRentedItemScn;
@@ -47,6 +48,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         saveTextItem = new JMenuItem("Save Text");
         rentConsoleItem = new JMenuItem("Rent a Console");
         rentGameItem = new JMenuItem("Rent a Game");
+        rentControllerItem = new JMenuItem("Rent a Controller");
         returnItem = new JMenuItem("Return of Game or Console");
 
         currentRentedItemScn = new JMenuItem("Current Rental Screen");
@@ -74,6 +76,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
 
         actionMenu.add(rentConsoleItem);
         actionMenu.add(rentGameItem);
+        actionMenu.add(rentControllerItem);
         actionMenu.addSeparator();
         actionMenu.add(returnItem);
 
@@ -87,6 +90,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         exitItem.addActionListener(this);
         rentConsoleItem.addActionListener(this);
         rentGameItem.addActionListener(this);
+        rentControllerItem.addActionListener(this);
         returnItem.addActionListener(this);
 
         currentRentedItemScn.addActionListener(this);
@@ -176,6 +180,14 @@ public class GUIRentalStore extends JFrame implements ActionListener {
                 dList.add(gameOnly);
             }
         }
+        if(e.getSource() == rentControllerItem){
+            controler controller = new controler();
+            RentcontrolerDialog dialog = new RentcontrolerDialog(this, controller);
+            if(dialog.getCloseStatus() == RentGameDialog.OK){
+                dList.add(controller);
+            }
+        }
+
 
         if (returnItem == e.getSource()) {
             int index = jTable.getSelectedRow();
@@ -190,7 +202,11 @@ public class GUIRentalStore extends JFrame implements ActionListener {
                                 "\n for renting with us. The price is:  " +
                                 unit.getCost(unit.actualDateReturned) +
                                 " dollars");
+            if(dialog.getCloseStatus() == ReturnedOnDialog.OK){     
+
+                dList.get(index).setActualDateReturned(dat);
                 dList.update(index, unit);
+            }
             }
         }
 

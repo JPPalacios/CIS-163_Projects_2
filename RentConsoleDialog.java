@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.InvalidParameterException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -108,16 +109,21 @@ public class RentConsoleDialog extends JDialog implements ActionListener {
                 d2 = df.parse(txtDateDueDate.getText());
                 gregTemp.setTime(d2);
                 console.setDueBack(gregTemp);
+                //Date Error check
+                if(d1.compareTo(d2) < 0 ){
+                    throw new InvalidParameterException("Due date is before rented date");
+                }
 
             } catch (ParseException e1) {
 //                  Do some thing good, what that is, I am not sure.
+                    throw new InvalidParameterException("Invalid date");
             }
 
             console.setNameOfRenter(txtRenterName.getText());
             console.setConsoleType((ConsoleTypes) comBoxConsoleType.getSelectedItem());
 
             if ((ConsoleTypes) comBoxConsoleType.getSelectedItem() == ConsoleTypes.NoSelection) {
-                JOptionPane.showMessageDialog(null,"Select Console.");
+                JOptionPane.showMessageDialog(null,"Select Controller.");
                 closeStatus = CANCEL;
             }
 

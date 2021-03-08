@@ -24,7 +24,7 @@ public class controler extends Rental {
         return controlerTypes;
     }
 
-    public void setConsoleType(ControlerTypes controlerTypes) {
+    public void setCotrollerType(ControlerTypes controlerTypes) {
         this.controlerTypes = controlerTypes;
     }
 
@@ -57,8 +57,8 @@ public class controler extends Rental {
 
     @Override
     public String toString() {
-        return "Console{" +
-                " consoleType=" + controlerTypes + " " + super.toString() +
+        return "controler{" +
+                " controlerTypes=" + controlerTypes + " " + super.toString() +
                 '}';
     }
 }
