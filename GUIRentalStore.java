@@ -49,7 +49,7 @@ public class GUIRentalStore extends JFrame implements ActionListener {
         rentConsoleItem = new JMenuItem("Rent a Console");
         rentGameItem = new JMenuItem("Rent a Game");
         rentControllerItem = new JMenuItem("Rent a Controller");
-        returnItem = new JMenuItem("Return of Game or Console");
+        returnItem = new JMenuItem("Return of Game, Console or Controller");
 
         currentRentedItemScn = new JMenuItem("Current Rental Screen");
         currentReturnedItemScn = new JMenuItem("Returned screen");

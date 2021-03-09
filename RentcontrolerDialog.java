@@ -15,7 +15,7 @@ public class RentcontrolerDialog extends JDialog implements ActionListener {
     private JTextField txtRenterName;
     private JTextField txtDateRentedOn;
     private JTextField txtDateDueDate;
-    private JComboBox<ControlerTypes> comBoxConsoleType;
+    private JComboBox<ControlerTypes> comBoxcontrolerType;
     private JButton okButton;
     private JButton cancelButton;
     private int closeStatus;
@@ -36,7 +36,7 @@ public class RentcontrolerDialog extends JDialog implements ActionListener {
         super(parent, true);
         this.controller = controller;
 
-        setTitle("Console dialog box");
+        setTitle("Controller dialog box");
         closeStatus = CANCEL;
         setSize(500,200);
 
@@ -46,7 +46,7 @@ public class RentcontrolerDialog extends JDialog implements ActionListener {
         txtRenterName = new JTextField("Roger",30);
         txtDateRentedOn = new JTextField(25);
         txtDateDueDate = new JTextField(25);
-        comBoxConsoleType = new JComboBox<>(ControlerTypes.values());
+        comBoxcontrolerType = new JComboBox<>(ControlerTypes.values());
 
         Calendar currentDate = Calendar.getInstance();
         SimpleDateFormat formatter= new SimpleDateFormat("MM/dd/yyyy");
@@ -66,8 +66,8 @@ public class RentcontrolerDialog extends JDialog implements ActionListener {
         textPanel.add(txtDateRentedOn);
         textPanel.add(new JLabel("Date Due (est.): "));
         textPanel.add(txtDateDueDate);
-        textPanel.add(new JLabel("ConsoleType"));
-        textPanel.add(comBoxConsoleType);
+        textPanel.add(new JLabel("ControllerType"));
+        textPanel.add(comBoxcontrolerType);
 
         getContentPane().add(textPanel, BorderLayout.CENTER);
 
@@ -109,7 +109,7 @@ public class RentcontrolerDialog extends JDialog implements ActionListener {
                 gregTemp.setTime(d2);
                 controller.setDueBack(gregTemp);
                 //Date Error check
-                if(d1.compareTo(d2) < 0 ){
+                if(d2.compareTo(d1) < 0 ){
                     throw new InvalidParameterException("Due date is before rented date");
                 }
 
@@ -119,10 +119,10 @@ public class RentcontrolerDialog extends JDialog implements ActionListener {
             }
 
             controller.setNameOfRenter(txtRenterName.getText());
-            controller.setCotrollerType((ControlerTypes) comBoxConsoleType.getSelectedItem());
+            controller.setCotrollerType((ControlerTypes) comBoxcontrolerType.getSelectedItem());
 
-            if ((ControlerTypes) comBoxConsoleType.getSelectedItem() == ControlerTypes.NoSelection) {
-                JOptionPane.showMessageDialog(null,"Select Console.");
+            if ((ControlerTypes) comBoxcontrolerType.getSelectedItem() == ControlerTypes.NoSelection) {
+                JOptionPane.showMessageDialog(null,"Select Controller.");
                 closeStatus = CANCEL;
             }
 

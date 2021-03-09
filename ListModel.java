@@ -95,6 +95,7 @@ public class ListModel extends AbstractTableModel {
             case CurrentRentalStatus:
                 filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
                         .filter(n -> n.actualDateReturned == null)
+                        .map(n -> capFirstLetter(n))
                         .collect(Collectors.toList());
 
                 // Note: This uses Lambda function
@@ -104,6 +105,7 @@ public class ListModel extends AbstractTableModel {
             case ReturnedItems:
                 filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
                        .filter(n -> n.actualDateReturned != null)
+                       .map(n -> capFirstLetter(n))
                        .collect(Collectors.toList());
 
                 // Note: This uses an anonymous class.
@@ -118,6 +120,7 @@ public class ListModel extends AbstractTableModel {
 
             case EveryThing:
                 filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
+                    .map(n -> capFirstLetter(n))
                     .collect(Collectors.toList());
 
                 break;
@@ -125,6 +128,7 @@ public class ListModel extends AbstractTableModel {
              case DueWithInWeek:
                 filteredListRentals = (ArrayList<Rental>) listOfRentals.stream()
                 .filter(n ->  daysBetween(n.rentedOn, n.dueBack)  <= 7)
+                .map(n -> capFirstLetter(n))
                 .collect(Collectors.toList()); 
 
                 Collections.sort(filteredListRentals, (n1, n2) -> n1.nameOfRenter.compareTo(n2.nameOfRenter));    
@@ -136,10 +140,7 @@ public class ListModel extends AbstractTableModel {
                     .filter(n -> n.actualDateReturned == null)
                     // filters out rentals that are not returned yet
                     .filter(n ->  daysBetween(n.rentedOn, n.dueBack)  <= 7)
-                    // .filter(n ->  {n.setNameOfRenter(n.getNameOfRenter().substring(0, 1).toUpperCase()) + 
-                    //              n.getNameOfRenter().substring( 1, n.getNameOfRenter().length())
-                    //              return true; 
-                    // })
+                    .map(n -> capFirstLetter(n))
                     .collect(Collectors.toList()); 
             
                 //  ArrayList only for sorted games (create stream, filter, collect, sort collection)
@@ -167,17 +168,30 @@ public class ListModel extends AbstractTableModel {
                 break;
 
             case Cap14DaysOverdue:
-                filteredListRentals = (ArrayList<Rental>) listOfRentals.stream() 
+
+                ArrayList<Rental> over7days = (ArrayList<Rental>) listOfRentals.stream() 
+                    // filters out returned rentals
+                    .filter(n -> n.actualDateReturned == null)
+                 // filters out rentals that are not returned yet
+                    .filter(n ->  daysBetween(n.rentedOn, n.dueBack)  >= 7)
+                    .filter(n ->  daysBetween(n.rentedOn, n.dueBack)  < 14)
+                    .map(n -> capFirstLetter(n))
+                    .collect(Collectors.toList()); 
+                Collections.sort(over7days, (n1, n2) -> n1.nameOfRenter.compareTo(n2.nameOfRenter));  
+
+
+                ArrayList<Rental> over14days = (ArrayList<Rental>) listOfRentals.stream() 
                     // filters out returned rentals
                     .filter(n -> n.actualDateReturned == null)
                     // filters out rentals that are not returned yet
-                    .filter(n ->  daysBetween(n.rentedOn, n.dueBack)  <= 14)
-                    // .filter(n ->  {n.setNameOfRenter(n.getNameOfRenter().substring(0, 1).toUpperCase()) + 
-                    //             n.getNameOfRenter().substring( 1, n.getNameOfRenter().length())
-                    //             return true; 
-                    // })
+                    .filter(n ->  daysBetween(n.rentedOn, n.dueBack)  >= 14)
+                    .map(n -> toCaps(n))
                     .collect(Collectors.toList()); 
-                Collections.sort(controlerList, (n1, n2) -> n1.nameOfRenter.compareTo(n2.nameOfRenter));        
+               Collections.sort(over14days, (n1, n2) -> n1.nameOfRenter.compareTo(n2.nameOfRenter));   
+               
+               over7days.addAll(over14days);
+               filteredListRentals = over7days;
+               
                 break;
 
             default:
@@ -185,19 +199,61 @@ public class ListModel extends AbstractTableModel {
         }
         fireTableStructureChanged();
     }
-
-    private String toCaps(Rental rent){
+/*****************************
+ * Takes in an object and determines if it is a game controller or console
+ * and puts the entire name to uppercase in the object and returns it
+ * @param rent - object put in as game controller or console
+ * @return caps - object output same type as input with first name in all caps 
+ ********************/
+    private Rental toCaps(Rental rent){
         if(rent instanceof Game){
-           
+            Rental caps = new Game(); 
+            caps = rent;
+            caps.setNameOfRenter(caps.getNameOfRenter().toUpperCase());
+            return caps;
         }
         else if(rent instanceof Console){
-
+            Rental caps = new Console(); 
+            caps = rent;
+            caps.setNameOfRenter(caps.getNameOfRenter().toUpperCase());
+            return caps;
         }
-        else if(rent instanceof controler){
-            
+        else{
+            Rental caps = new controler(); 
+            caps = rent;
+            caps.setNameOfRenter(caps.getNameOfRenter().toUpperCase());
+            return caps;
+        }
+    }
+/*****************************
+ * Takes in an object and determines if it is a game controller or console
+ * and puts the first letter of the name to uppercase in the object and returns it
+ * @param rent - object put in as game controller or console
+ * @return caps - object output same type as input with first letter of name in caps 
+ ********************/
+    private Rental capFirstLetter(Rental rent){
+        if(rent instanceof Game){
+            Rental caps = new Game(); 
+            caps = rent;
+            caps.setNameOfRenter(caps.getNameOfRenter().substring(0, 1).toUpperCase() + 
+            caps.getNameOfRenter().substring( 1, caps.getNameOfRenter().length()).toLowerCase());
+            return caps;
+        }
+        else if(rent instanceof Console){
+            Rental caps = new Console(); 
+            caps = rent;
+            caps.setNameOfRenter(caps.getNameOfRenter().substring(0, 1).toUpperCase() + 
+            caps.getNameOfRenter().substring( 1, caps.getNameOfRenter().length()).toLowerCase());
+            return caps;
+        }
+        else{
+            Rental caps = new controler(); 
+            caps = rent;
+            caps.setNameOfRenter(caps.getNameOfRenter().substring(0, 1).toUpperCase() + 
+            caps.getNameOfRenter().substring( 1, caps.getNameOfRenter().length()).toLowerCase());
+            return caps;
         }
 
-        return "";
     }
     
     /**

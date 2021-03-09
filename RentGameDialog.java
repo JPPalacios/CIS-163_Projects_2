@@ -118,7 +118,7 @@ public class RentGameDialog extends JDialog implements ActionListener {
                 dueDateTemp.setTime(d2);
                 game.setDueBack(dueDateTemp);
                 //Date Error check
-                if(d1.compareTo(d2) < 0 ){
+                if(d2.compareTo(d1) < 0 ){
                     throw new InvalidParameterException("Due date is before rented date");
                 }
 

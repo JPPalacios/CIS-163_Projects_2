@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.InvalidParameterException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -87,6 +88,10 @@ public class ReturnedOnDialog extends JDialog implements ActionListener {
 			try {
 				d = df.parse(txtDate.getText());
 				gTemp.setTime(d);
+				
+				if(unit.rentedOn.compareTo(gTemp) > 0){
+					throw new InvalidParameterException("Return date is before rented date");
+				}
 				unit.setActualDateReturned(gTemp);
 
 			} catch (ParseException e1) {
